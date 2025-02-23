@@ -597,7 +597,7 @@ Current user message: ${message}`;
             <div className="md:flex gap-16">
               <div className="md:w-1/2">
                 <img
-                  src="https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
+                  src="https://media-hosting.imagekit.io//17c354759e83491a/IMG20250131163931.jpg?Expires=1834928142&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=L4pr6pHheeOEdzapQ-l4ztIJdEki--KB~yDYiC7-ZXhdw18atuaUQrbjNbSoIbLFm1dcgdzaPp98dWsLT1dLQ8XEnKGGPZg6R2cCR3rmajPSK7Jdz06IJ53r6uHTCbaZkaCi8J~vmtxcdMVtyA4xPNCKX-ieql~XxS9VVQ0PRHaEqUFCmNhoo8I7FWp2meUCOS-KTu1w1k4v0LvEXLu~ND8qdSlDuWgb-WPid~Q1BYJlOCOhutWtiXLu7nmEYAF5u8QqE5tApUMz5L1Nd5xqtuOmNpY-p6TRakZwYs2AJWaW93mjsbX7c5DdCFt3lk07PgYbJLg6nA3sRS2ixcyuGA__"
                   alt="About Me"
                   className="rounded-xl shadow-lg"
                 />
