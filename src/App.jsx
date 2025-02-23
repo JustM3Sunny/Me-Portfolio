@@ -1,12 +1,11 @@
+           
 import "./index.css";
 import LocomotiveScroll from "locomotive-scroll";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { IoMenuOutline } from "react-icons/io5";
-// Import necessary modules for Gemini AI and email handling (placeholders for now)
 import { GoogleGenerativeAI } from "@google/generative-ai";
-// import emailjs from '@emailjs/browser';
 
 gsap.registerPlugin(ScrollTrigger);
 function App() {
@@ -17,8 +16,8 @@ function App() {
   const cursorRef = useRef(null);
   const cursorDotRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]); // Visible chat messages
-  const [chatHistory, setChatHistory] = useState([]); // Full chat history for AI context
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatHistory, setChatHistory] = useState([]);
   const [chatInput, setChatInput] = useState("");
 
   // Gemini AI setup
@@ -28,7 +27,6 @@ function App() {
   // Function to handle sending message to Gemini
   const sendChatMessageToGemini = async (message) => {
     try {
-      // Create context from chat history
       const chatContext = chatHistory.map(msg => 
         `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.text}`
       ).join('\n');
@@ -110,7 +108,6 @@ https://x.com/JustM3Sunny
 https://github.com/JustM3Sunny
 Pricing: Charges different prices for each project. Smaller and easier projects start at 10,000 INR or users k requirements k hisaab se kam jyda ho skte hai or bde projects minimum 50,000 INR or kam jyda.
 
-
 Current user message: ${message}`;
 
       const result = await model.generateContent(prompt);
@@ -126,25 +123,16 @@ Current user message: ${message}`;
     if (chatInput.trim()) {
       const userMessage = chatInput;
       
-      // Add to visible messages
       setChatMessages(currentMessages => [...currentMessages, { text: userMessage, sender: "user" }]);
-      
-      // Add to chat history
       setChatHistory(history => [...history, { text: userMessage, sender: "user" }]);
-      
       setChatInput("");
 
       const geminiResponse = await sendChatMessageToGemini(userMessage);
       
-      // Add bot response to both visible messages and history
       setChatMessages(currentMessages => [...currentMessages, { text: geminiResponse, sender: "bot" }]);
       setChatHistory(history => [...history, { text: geminiResponse, sender: "bot" }]);
     }
   };
-
-
-  // Function to apply consistent text animations (removed unused animateText as per lint)
-
 
   useEffect(() => {
     const scroll = new LocomotiveScroll({
@@ -167,51 +155,30 @@ Current user message: ${message}`;
             { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: "power1.out" }
           );
 
-          // Color animations based on section index - Adjusted for clarity and consistency
-          const sectionElements = section.querySelectorAll("h2, h3, p, div, button, img, a, span"); // Include span for comprehensive text selection
-          let targetColor;
-          if (index === 0 || index === 4 || index === 6) { // White sections, target black text
-            targetColor = "#000";
-          } else { // Black/dark sections, target white text
-            targetColor = "#fff";
-          }
+          const sectionElements = section.querySelectorAll("h2, h3, p, div, button, img, a, span");
+          
+          // Enhanced color handling based on background
+          const bgColor = window.getComputedStyle(section).backgroundColor;
+          const isDarkBg = bgColor.includes("rgb(0, 0, 0)") || bgColor.includes("rgba(0, 0, 0)");
+          const targetColor = isDarkBg ? "#f8f8f8" : "#111111";
 
-          if (index === 2) { // About section - specific color handling
-            gsap.to(section.querySelectorAll("h2, p, button, a"), { // Removed img as it doesn't have text color
-              duration: 0.6,
-              stagger: 0.01,
-              color: "#111", // Specific color for About section text
-            });
-          } else if (index === 3) { // Skills section - specific color handling
-            gsap.to(section.querySelectorAll("h2, p, a, h3"), { // Removed img as it doesn't have text color
-              duration: 0.6,
-              stagger: 0.1,
-              color: "#eee", // Specific color for Skills section text
-            });
-          }
-          else { // Default color animation for other sections
-            gsap.to(sectionElements, {
-              color: targetColor,
-              duration: 0.6,
-              stagger: 0.1,
-              onUpdate: function () {
-                const target = this.targets()[0];
-                if (target.tagName === "IMG" || target.children.length > 0) { // Skip images and elements with children to avoid errors
-                  return;
-                }
-                const currentColor = target.style.color;
-                const computedTargetColor = gsap.utils.getUnit(targetColor) === "rgb" ? targetColor : gsap.utils.splitColor(targetColor);
-
-                if (targetColor === "#000" && (currentColor === "" || currentColor === "rgb(255, 255, 255)")) {
-                  gsap.to(target, { color: "#111" });
-                } else if (targetColor === "#fff" && (currentColor === "" || currentColor === "rgb(0, 0, 0)")) {
-                  gsap.to(target, { color: "#eee" });
-                }
-              }
-            });
-          }
-
-
+          gsap.to(sectionElements, {
+            color: targetColor,
+            duration: 0.6,
+            stagger: 0.1,
+            onUpdate: function() {
+              const target = this.targets()[0];
+              if (target.tagName === "IMG" || target.children.length > 0) return;
+              
+              // Ensure text remains readable
+              const currentBg = window.getComputedStyle(target.parentElement).backgroundColor;
+              const isDarkParentBg = currentBg.includes("rgb(0, 0, 0)") || currentBg.includes("rgba(0, 0, 0)");
+              gsap.to(target, { 
+                color: isDarkParentBg ? "#f8f8f8" : "#111111",
+                textShadow: isDarkParentBg ? "0 0 1px rgba(255,255,255,0.2)" : "none"
+              });
+            }
+          });
         },
         onLeaveBack: () => {
           gsap.to(section, {
@@ -232,7 +199,6 @@ Current user message: ${message}`;
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      // Animate cursor with delay
       gsap.to(cursorRef.current, {
         x: e.clientX - 12,
         y: e.clientY - 12,
@@ -240,7 +206,6 @@ Current user message: ${message}`;
         ease: "power2.out"
       });
 
-      // Animate cursor dot with no delay
       gsap.to(cursorDotRef.current, {
         x: e.clientX - 4,
         y: e.clientY - 4,
@@ -271,15 +236,11 @@ Current user message: ${message}`;
           color: "#FFB6C1",
           duration: 0.3,
           ease: "power2.out",
+          textShadow: "0 0 8px rgba(255,182,193,0.6)",
         });
         gsap.to(link.querySelector(".underline"), {
           scaleX: 1,
           backgroundColor: "#FFB6C1",
-          duration: 0.3,
-        });
-
-        gsap.to(link, {
-          textShadow: "0 0 8px rgba(255,182,193,0.6)",
           duration: 0.3,
         });
       });
@@ -291,15 +252,13 @@ Current user message: ${message}`;
           color: "#fff",
           textShadow: "none",
           duration: 0.3,
-          onUpdate: function () {
-            const currentColor = link.style.color;
-            const bodyBgColor = document.body.style.backgroundColor;
-            if (bodyBgColor === "rgb(255, 255, 255)" && (currentColor === "rgb(255, 255, 255)" || currentColor === "")) {
-              gsap.to(link, { color: "#333" });
-            }
-            if (bodyBgColor === "rgb(0, 0, 0)" && currentColor === "rgb(0, 0, 0)") {
-              gsap.to(link, { color: "#eee" });
-            }
+          onUpdate: function() {
+            const bgColor = window.getComputedStyle(link.parentElement).backgroundColor;
+            const isDarkBg = bgColor.includes("rgb(0, 0, 0)") || bgColor.includes("rgba(0, 0, 0)");
+            gsap.to(link, { 
+              color: isDarkBg ? "#f8f8f8" : "#111111",
+              textShadow: isDarkBg ? "0 0 1px rgba(255,255,255,0.2)" : "none"
+            });
           },
         });
         gsap.to(link.querySelector(".underline"), {
@@ -311,7 +270,7 @@ Current user message: ${message}`;
     });
   }, []);
 
-  const projects = [ /* ... projects array remains the same ... */
+  const projects = [
     {
       title: "Personal Portfolio Website",
       image: "https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
@@ -356,7 +315,7 @@ Current user message: ${message}`;
     },
   ];
 
-  const skills = [ /* ... skills array remains the same ... */
+  const skills = [
     { name: "HTML", icon: "html-icon" },
     { name: "JavaScript", icon: "javascript-icon" },
     { name: "React", icon: "react-icon" },
@@ -367,8 +326,7 @@ Current user message: ${message}`;
     { name: "Tailwind CSS", icon: "tailwind-icon" },
   ];
 
-
-  const testimonials = [ /* ... testimonials array remains the same ... */
+  const testimonials = [
     {
       name: "Rajesh Kumar",
       title: "Software Engineer, IT Company",
@@ -397,22 +355,12 @@ Current user message: ${message}`;
 
   const handleMenuToggle = () => {
     setMenuOpen(!menuOpen);
-
-    if (!menuOpen) {
-      gsap.to(".mobile-menu", {
-        y: 0,
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.inOut",
-      });
-    } else {
-      gsap.to(".mobile-menu", {
-        y: "-100%",
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.inOut",
-      });
-    }
+    gsap.to(".mobile-menu", {
+      y: !menuOpen ? 0 : "-100%",
+      opacity: !menuOpen ? 1 : 0,
+      duration: 0.5,
+      ease: "power2.inOut",
+    });
   };
 
   const handleEmailSubmit = async (event) => {
@@ -431,7 +379,7 @@ Current user message: ${message}`;
       );
       console.log('SUCCESS!', result.text);
       alert("Thank you for your message! A confirmation email has been sent to you.");
-      form.reset(); // Clear the form on success
+      form.reset();
     } catch (error) {
       console.log('FAILED...', error.text);
       alert("Oops, something went wrong. Please try again later.");
@@ -597,7 +545,9 @@ Current user message: ${message}`;
             <div className="md:flex gap-16">
               <div className="md:w-1/2">
                 <img
-                  src="https://media-hosting.imagekit.io//17c354759e83491a/IMG20250131163931.jpg?Expires=1834928142&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=L4pr6pHheeOEdzapQ-l4ztIJdEki--KB~yDYiC7-ZXhdw18atuaUQrbjNbSoIbLFm1dcgdzaPp98dWsLT1dLQ8XEnKGGPZg6R2cCR3rmajPSK7Jdz06IJ53r6uHTCbaZkaCi8J~vmtxcdMVtyA4xPNCKX-ieql~XxS9VVQ0PRHaEqUFCmNhoo8I7FWp2meUCOS-KTu1w1k4v0LvEXLu~ND8qdSlDuWgb-WPid~Q1BYJlOCOhutWtiXLu7nmEYAF5u8QqE5tApUMz5L1Nd5xqtuOmNpY-p6TRakZwYs2AJWaW93mjsbX7c5DdCFt3lk07PgYbJLg6nA3sRS2ixcyuGA__"
+src="https://media-hosting.imagekit.io//17c354759e83491a/IMG20250131163931.jpg?Expires=1834928142&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=L4pr6pHheeOEdzapQ-l4ztIJdEki--KB~yDYiC7-ZXhdw18atuaUQrbjNbSoIbLFm1dcgdzaPp98dWsLT1dLQ8XEnKGGPZg6R2cCR3rmajPSK7Jdz06IJ53r6uHTCbaZkaCi8J~vmtxcdMVtyA4xPNCKX-ieql~XxS9VVQ0PRHaEqUFCmNhoo8I7FWp2meUCOS-KTu1w1k4v0LvEXLu~ND8qdSlDuWgb-WPid~Q1BYJlOCOhutWtiXLu7nmEYAF5u8QqE5tApUMz5L1Nd5xqtuOmNpY-p6TRakZwYs2AJWaW93mjsbX7c5DdCFt3lk07PgYbJLg6nA3sRS2ixcyuGA__"
+                  
+{/*                  src="https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60" */}
                   alt="About Me"
                   className="rounded-xl shadow-lg"
                 />
