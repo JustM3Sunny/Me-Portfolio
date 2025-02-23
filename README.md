@@ -1,4 +1,5 @@
 🚀 Shannniii.dev - Portfolio Website
+🌐 [https://me-portfolio-green.vercel.app/]
 
 Welcome to my personal portfolio website! This site is a showcase of my skills, projects, and experience as a developer, crafted with modern UI/UX principles, smooth animations, and interactive elements. 💻✨
 
@@ -119,4 +120,4 @@ handleSendChatMessage() – Handles user messages & responses.
 
 🔥 Developed with passion by Shannniiii 🔥
 
-🌐 [Your Portfolio URL]📧 Contact: justaskcoding76@gmail.com🚀 Let's connect & build something amazing! 😊
+ Contact: justaskcoding76@gmail.com🚀 Let's connect & build something amazing! 😊
