@@ -724,7 +724,7 @@ Current user message: ${message}`;
                 {[...testimonials, ...testimonials].map((testimonial, index) => (
                   <div
                     key={index}
-                    className="min-w-[calc(50%-2rem)] md:min-w-[calc(50%-2rem)] mx-4 p-8 bg-black/40 backdrop-blur-sm rounded-2xl border border-gray-900 hover:border-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 shrink-0"
+                    className="min-w-[calc(50%-2rem)] bg-white md:min-w-[calc(50%-2rem)] mx-4 p-8 bg-black/40 backdrop-blur-sm rounded-2xl border border-gray-900 hover:border-white/20 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 shrink-0"
                     style={{
                       animation: `slide ${testimonials.length * 5}s linear infinite`,
                       animationDelay: `${index * (5 / testimonials.length)}s`
