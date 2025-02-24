@@ -1,6 +1,6 @@
 🚀 Shannniii.dev - Portfolio Website
 
-🌐 Live Demo [live](https://me-portfolio-green.vercel.app/)
+🌐 Live Demo [live](https://portfolio-justm3sunnys-projects.vercel.app/)
 
 Welcome to my personal portfolio website! This site is a showcase of my skills, projects, and experience as a developer, crafted with modern UI/UX principles, smooth animations, and interactive elements. 💻✨
 
