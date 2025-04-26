@@ -3,37 +3,48 @@ import globals from 'globals';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 
-export default [
+const isTypeScriptProject = () => {
+  try {
+    require.resolve('typescript');
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const config = [
   { ignores: ['dist'] },
   {
-    files: ['**/*.{js,jsx,ts,tsx}'], // Added TypeScript support
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 'latest', // Use 'latest' directly
+      ecmaVersion: 'latest',
       globals: {
         ...globals.browser,
-        ...globals.node, // Add Node.js globals if needed
+        ...globals.node,
       },
       parserOptions: {
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
-        project: './tsconfig.json', // Enable TypeScript support if using TypeScript
+        ...(isTypeScriptProject() ? { project: './tsconfig.json' } : {}),
       },
-      parser: '@typescript-eslint/parser', // Add TypeScript parser if using TypeScript
+      parser: isTypeScriptProject() ? tsParser : '@babel/eslint-parser', // Fallback to Babel parser
     },
-    settings: { react: { version: 'detect' } }, // Use 'detect' for automatic version detection
+    settings: { react: { version: 'detect' } },
     plugins: {
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      '@typescript-eslint': '@typescript-eslint', // Add TypeScript plugin if using TypeScript
+      ...(isTypeScriptProject() ? { '@typescript-eslint': typescriptEslint } : {}),
     },
     extends: [
       'eslint:recommended',
       'plugin:react/recommended',
       'plugin:react/jsx-runtime',
       'plugin:react-hooks/recommended',
-      'plugin:@typescript-eslint/recommended', // Add TypeScript recommended rules if using TypeScript
+      ...(isTypeScriptProject() ? ['plugin:@typescript-eslint/recommended'] : []),
     ],
     rules: {
       'react/jsx-no-target-blank': 'off',
@@ -41,9 +52,14 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
-      'no-unused-vars': 'warn', // Example: Warn on unused variables
-      'no-console': 'warn', // Example: Warn on console.log statements
-      // Add more custom rules here
+      'no-unused-vars': 'warn',
+      'no-console': 'warn',
+      ...(isTypeScriptProject() ? {
+        '@typescript-eslint/explicit-function-return-type': 'warn',
+        '@typescript-eslint/explicit-module-boundary-types': 'warn',
+      } : {}),
     },
   },
 ];
+
+export default config;
