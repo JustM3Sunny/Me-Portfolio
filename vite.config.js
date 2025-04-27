@@ -37,18 +37,21 @@ export default defineConfig(({ mode }) => {
             //   return `component-${componentName}`;
             // }
           },
-          chunkFileNames: isProduction
-            ? 'js/[name]-[hash].js'
-            : 'js/[name].js',
-          entryFileNames: isProduction
-            ? 'js/[name]-[hash].js'
-            : 'js/[name].js',
+          chunkFileNames: (chunkInfo) => isProduction
+            ? `js/[name]-[hash].js`
+            : `js/[name].js`,
+          entryFileNames: (chunkInfo) => isProduction
+            ? `js/[name]-[hash].js`
+            : `js/[name].js`,
           assetFileNames: (assetInfo) => {
-            const extType = assetInfo.name.split('.').pop();
+            const extType = assetInfo.name?.split('.').pop(); // Optional chaining for safety
+            if (!extType) {
+              return `assets/[name]-[hash][extname]`; // Handle cases with no extension
+            }
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
               return `images/[name]-[hash][extname]`;
             }
-            return `[extType]/[name]-[hash][extname]`;
+            return `assets/[name]-[hash][extname]`; // Use a generic assets folder
           },
         },
       },

@@ -14,9 +14,8 @@ module.exports = {
         'custom-pink': '#FFB6C1',
       },
       fontFamily: {
-        'custom-font': ['Arial', 'sans-serif'],
+        'custom-font': ['Arial', 'sans-serif'], // Consider a more modern font stack
       },
-      // Example of adding custom spacing
       spacing: {
         '72': '18rem',
         '84': '21rem',
@@ -25,10 +24,16 @@ module.exports = {
     },
   },
   plugins: [],
-  // Example of adding safelist to prevent purging of dynamically used classes
+  // Safelist is generally discouraged. Consider using the `content` array more effectively.
+  // If safelisting is absolutely necessary, use a more specific pattern.
+  // Example: safelist: [{ pattern: /^(bg|text)-(red|blue|green)-(100|200|300)$/ }],
   safelist: [
     'bg-red-500',
     'text-3xl',
     'lg:text-4xl',
   ],
-};
+  // Consider adding prefix to avoid naming conflicts with other CSS libraries
+  // prefix: 'tw-',
+  // Consider using important: true to increase specificity
+  // important: true,
+}
