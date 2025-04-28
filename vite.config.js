@@ -36,13 +36,12 @@ export default defineConfig(({ mode }) => {
             //   const componentName = id.split('/').pop().replace('.jsx', '');
             //   return `component-${componentName}`;
             // }
+            return undefined; // Explicitly return undefined if no chunk is matched
           },
-          chunkFileNames: (chunkInfo) => isProduction
-            ? `js/[name]-[hash].js`
-            : `js/[name].js`,
-          entryFileNames: (chunkInfo) => isProduction
-            ? `js/[name]-[hash].js`
-            : `js/[name].js`,
+          chunkFileNames: (chunkInfo) =>
+            isProduction ? `js/[name]-[hash].js` : `js/[name].js`,
+          entryFileNames: (chunkInfo) =>
+            isProduction ? `js/[name]-[hash].js` : `js/[name].js`,
           assetFileNames: (assetInfo) => {
             const extType = assetInfo.name?.split('.').pop(); // Optional chaining for safety
             if (!extType) {

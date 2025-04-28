@@ -8,12 +8,13 @@ import tsParser from '@typescript-eslint/parser';
 import fs from 'node:fs';
 import path from 'node:path';
 
+const tsConfigPath = path.resolve('./tsconfig.json');
+
 const hasTSConfig = () => {
   try {
-    // Check if tsconfig.json exists in the project root
-    fs.accessSync(path.resolve('./tsconfig.json'), fs.constants.F_OK);
+    fs.accessSync(tsConfigPath, fs.constants.F_OK);
     return true;
-  } catch (e) {
+  } catch (error) {
     return false;
   }
 };
@@ -33,7 +34,7 @@ const config = [
       parserOptions: {
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
-        ...(tsProject ? { project: './tsconfig.json' } : {}),
+        ...(tsProject ? { project: tsConfigPath } : {}),
       },
       parser: tsProject ? tsParser : '@babel/eslint-parser', // Fallback to Babel parser
     },
@@ -59,10 +60,12 @@ const config = [
       ],
       'no-unused-vars': 'warn',
       'no-console': 'warn',
-      ...(tsProject ? {
-        '@typescript-eslint/explicit-function-return-type': 'warn',
-        '@typescript-eslint/explicit-module-boundary-types': 'warn',
-      } : {}),
+      ...(tsProject
+        ? {
+            '@typescript-eslint/explicit-function-return-type': 'warn',
+            '@typescript-eslint/explicit-module-boundary-types': 'warn',
+          }
+        : {}),
     },
   },
 ];
