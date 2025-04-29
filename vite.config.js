@@ -7,20 +7,20 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
   const analyzeBundle = process.env.ANALYZE_BUNDLE === 'true';
 
+  const plugins = [react(), tailwindcss()];
+
+  if (analyzeBundle) {
+    plugins.push(
+      visualizer({
+        open: true,
+        filename: 'dist/stats.html',
+        template: 'treemap',
+      })
+    );
+  }
+
   return {
-    plugins: [
-      react(),
-      tailwindcss(),
-      ...(analyzeBundle
-        ? [
-            visualizer({
-              open: true,
-              filename: 'dist/stats.html',
-              template: 'treemap',
-            }),
-          ]
-        : []),
-    ],
+    plugins: plugins,
     build: {
       sourcemap: !isProduction,
       minify: isProduction,
@@ -36,21 +36,28 @@ export default defineConfig(({ mode }) => {
             //   const componentName = id.split('/').pop().replace('.jsx', '');
             //   return `component-${componentName}`;
             // }
-            return undefined; // Explicitly return undefined if no chunk is matched
+            return undefined;
           },
           chunkFileNames: (chunkInfo) =>
             isProduction ? `js/[name]-[hash].js` : `js/[name].js`,
           entryFileNames: (chunkInfo) =>
             isProduction ? `js/[name]-[hash].js` : `js/[name].js`,
           assetFileNames: (assetInfo) => {
-            const extType = assetInfo.name?.split('.').pop(); // Optional chaining for safety
-            if (!extType) {
-              return `assets/[name]-[hash][extname]`; // Handle cases with no extension
+            if (!assetInfo.name) {
+              return 'assets/[hash][extname]'; // Handle cases where asset name is missing
             }
+
+            const extType = assetInfo.name.split('.').pop();
+
+            if (!extType) {
+              return `assets/[hash][extname]`; // Handle cases with no extension
+            }
+
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
               return `images/[name]-[hash][extname]`;
             }
-            return `assets/[name]-[hash][extname]`; // Use a generic assets folder
+
+            return `assets/[name]-[hash][extname]`;
           },
         },
       },

@@ -10,16 +10,22 @@ import path from 'node:path';
 
 const tsConfigPath = path.resolve('./tsconfig.json');
 
-const hasTSConfig = () => {
+let tsProject: boolean | null = null; // Initialize as null to avoid redundant checks
+
+const hasTSConfig = (): boolean => {
+  if (tsProject !== null) {
+    return tsProject; // Return cached value
+  }
+
   try {
     fs.accessSync(tsConfigPath, fs.constants.F_OK);
+    tsProject = true;
     return true;
   } catch (error) {
+    tsProject = false;
     return false;
   }
 };
-
-const tsProject = hasTSConfig();
 
 const config = [
   { ignores: ['dist'] },
@@ -34,23 +40,23 @@ const config = [
       parserOptions: {
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
-        ...(tsProject ? { project: tsConfigPath } : {}),
+        ...(hasTSConfig() ? { project: tsConfigPath } : {}),
       },
-      parser: tsProject ? tsParser : '@babel/eslint-parser', // Fallback to Babel parser
+      parser: hasTSConfig() ? tsParser : '@babel/eslint-parser', // Fallback to Babel parser
     },
     settings: { react: { version: 'detect' } },
     plugins: {
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      ...(tsProject ? { '@typescript-eslint': typescriptEslint } : {}),
+      ...(hasTSConfig() ? { '@typescript-eslint': typescriptEslint } : {}),
     },
     extends: [
       'eslint:recommended',
       'plugin:react/recommended',
       'plugin:react/jsx-runtime',
       'plugin:react-hooks/recommended',
-      ...(tsProject ? ['plugin:@typescript-eslint/recommended'] : []),
+      ...(hasTSConfig() ? ['plugin:@typescript-eslint/recommended'] : []),
     ],
     rules: {
       'react/jsx-no-target-blank': 'off',
@@ -60,7 +66,7 @@ const config = [
       ],
       'no-unused-vars': 'warn',
       'no-console': 'warn',
-      ...(tsProject
+      ...(hasTSConfig()
         ? {
             '@typescript-eslint/explicit-function-return-type': 'warn',
             '@typescript-eslint/explicit-module-boundary-types': 'warn',

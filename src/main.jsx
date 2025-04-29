@@ -9,13 +9,20 @@ const rootElement = document.getElementById('root');
 if (!rootElement) {
   console.error('Failed to find the root element: #root');
 } else {
-  const root = ReactDOM.createRoot(rootElement);
+  try {
+    const root = ReactDOM.createRoot(rootElement);
 
-  root.render(
-    <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </React.StrictMode>
-  );
+    root.render(
+      <React.StrictMode>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </React.StrictMode>
+    );
+  } catch (error) {
+    console.error('Error during React rendering:', error);
+    // Optionally render an error message to the user in the UI.
+    // For example:
+    // rootElement.innerHTML = '<h1>An error occurred while rendering the application.</h1>';
+  }
 }
