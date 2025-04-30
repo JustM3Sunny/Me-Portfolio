@@ -10,10 +10,10 @@ import path from 'node:path';
 
 const tsConfigPath = path.resolve('./tsconfig.json');
 
-let tsProject: boolean | null = null; // Initialize as null to avoid redundant checks
+let tsProject: boolean | undefined = undefined; // Initialize as undefined
 
 const hasTSConfig = (): boolean => {
-  if (tsProject !== null) {
+  if (tsProject !== undefined) {
     return tsProject; // Return cached value
   }
 
@@ -25,6 +25,29 @@ const hasTSConfig = (): boolean => {
     tsProject = false;
     return false;
   }
+};
+
+const basePlugins = {
+  react,
+  'react-hooks': reactHooks,
+  'react-refresh': reactRefresh,
+};
+
+const baseExtends = [
+  'eslint:recommended',
+  'plugin:react/recommended',
+  'plugin:react/jsx-runtime',
+  'plugin:react-hooks/recommended',
+];
+
+const baseRules = {
+  'react/jsx-no-target-blank': 'off',
+  'react-refresh/only-export-components': [
+    'warn',
+    { allowConstantExport: true },
+  ],
+  'no-unused-vars': 'warn',
+  'no-console': 'warn',
 };
 
 const config = [
@@ -45,34 +68,15 @@ const config = [
       parser: hasTSConfig() ? tsParser : '@babel/eslint-parser', // Fallback to Babel parser
     },
     settings: { react: { version: 'detect' } },
-    plugins: {
-      react,
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-      ...(hasTSConfig() ? { '@typescript-eslint': typescriptEslint } : {}),
-    },
-    extends: [
-      'eslint:recommended',
-      'plugin:react/recommended',
-      'plugin:react/jsx-runtime',
-      'plugin:react-hooks/recommended',
-      ...(hasTSConfig() ? ['plugin:@typescript-eslint/recommended'] : []),
-    ],
-    rules: {
-      'react/jsx-no-target-blank': 'off',
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-      'no-unused-vars': 'warn',
-      'no-console': 'warn',
-      ...(hasTSConfig()
-        ? {
-            '@typescript-eslint/explicit-function-return-type': 'warn',
-            '@typescript-eslint/explicit-module-boundary-types': 'warn',
-          }
-        : {}),
-    },
+    plugins: hasTSConfig() ? { ...basePlugins, '@typescript-eslint': typescriptEslint } : basePlugins,
+    extends: hasTSConfig() ? [...baseExtends, 'plugin:@typescript-eslint/recommended'] : baseExtends,
+    rules: hasTSConfig()
+      ? {
+          ...baseRules,
+          '@typescript-eslint/explicit-function-return-type': 'warn',
+          '@typescript-eslint/explicit-module-boundary-types': 'warn',
+        }
+      : baseRules,
   },
 ];
 

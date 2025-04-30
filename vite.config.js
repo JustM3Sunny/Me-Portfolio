@@ -50,7 +50,7 @@ export default defineConfig(({ mode }) => {
             const extType = assetInfo.name.split('.').pop();
 
             if (!extType) {
-              return `assets/[hash][extname]`; // Handle cases with no extension
+              return `assets/[hash][extname]'; // Handle cases with no extension
             }
 
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {

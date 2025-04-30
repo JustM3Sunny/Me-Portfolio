@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
-    "./public/index.html", // Added public index.html to content for more complete purging
+    "./public/index.html",
   ],
   darkMode: 'class',
   theme: {
@@ -27,17 +27,16 @@ module.exports = {
   plugins: [],
   // prefix: 'tw-', // Uncomment if prefixing is needed
   // important: true, // Uncomment if increased specificity is needed
-  // Purge unused styles in production for performance
-  purge: {
-    enabled: process.env.NODE_ENV === 'production',
+  purge: process.env.NODE_ENV === 'production' ? {
+    enabled: true,
     content: [
       './src/**/*.{js,jsx,ts,tsx}',
       './public/index.html',
     ],
     options: {
-      safelist: [], // Add any classes that are dynamically added and not detected by purgecss
-      // Add defaultExtractor to handle classes with dynamic names
+      safelist: [],
+      // Consider using a more robust extractor for complex class names
       defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
     },
-  },
+  } : false,
 }
