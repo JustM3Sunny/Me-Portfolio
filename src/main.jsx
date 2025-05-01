@@ -4,17 +4,23 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 
-const rootElement = document.getElementById('root');
+function RootComponent() {
+  const rootElement = document.getElementById('root');
 
-if (!rootElement) {
-  console.error('Failed to find the root element: #root');
-  // Consider rendering an error message directly to the body if root is missing.
-  document.body.innerHTML = '<h1>Application Error: Root element not found.</h1>';
-} else {
+  if (!rootElement) {
+    console.error('Failed to find the root element: #root');
+    return (
+      <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f8d7da', color: '#721c24' }}>
+        <h1>Application Error</h1>
+        <p>Root element not found. Please ensure a div with id "root" exists in your HTML.</p>
+      </div>
+    );
+  }
+
   try {
     const root = ReactDOM.createRoot(rootElement);
 
-    root.render(
+    return (
       <React.StrictMode>
         <BrowserRouter>
           <App />
@@ -23,7 +29,18 @@ if (!rootElement) {
     );
   } catch (error) {
     console.error('Error during React rendering:', error);
-    // Render a user-friendly error message in the UI.
-    rootElement.innerHTML = '<h1>An error occurred while rendering the application.</h1><p>Please try refreshing the page.</p>';
+    return (
+      <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f8d7da', color: '#721c24' }}>
+        <h1>Application Error</h1>
+        <p>An error occurred while rendering the application. Please try refreshing the page.</p>
+        <p>If the problem persists, contact support.</p>
+        <details>
+          <summary>Error Details</summary>
+          <pre>{error.message}</pre>
+        </details>
+      </div>
+    );
   }
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(<RootComponent />);

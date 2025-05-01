@@ -27,16 +27,27 @@ module.exports = {
   plugins: [],
   // prefix: 'tw-', // Uncomment if prefixing is needed
   // important: true, // Uncomment if increased specificity is needed
-  purge: process.env.NODE_ENV === 'production' ? {
-    enabled: true,
-    content: [
-      './src/**/*.{js,jsx,ts,tsx}',
-      './public/index.html',
-    ],
-    options: {
+  purge: process.env.NODE_ENV === 'production'
+    ? {
+      enabled: true,
+      content: [
+        './src/**/*.{js,jsx,ts,tsx}',
+        './public/index.html',
+      ],
       safelist: [],
       // Consider using a more robust extractor for complex class names
-      defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
-    },
-  } : false,
+      // This extractor is more robust and handles more cases.
+      defaultExtractor: (content) => {
+        const match = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
+        return match;
+      },
+    }
+    : false,
+  future: {
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true,
+  },
+  experimental: {
+    optimizeUniversalDefaults: true,
+  }
 }

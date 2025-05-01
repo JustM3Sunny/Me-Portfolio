@@ -10,10 +10,10 @@ import path from 'node:path';
 
 const tsConfigPath = path.resolve('./tsconfig.json');
 
-let tsProject: boolean | undefined = undefined; // Initialize as undefined
+let tsProject: boolean | null = null; // Initialize as null, indicating not checked yet
 
 const hasTSConfig = (): boolean => {
-  if (tsProject !== undefined) {
+  if (tsProject !== null) {
     return tsProject; // Return cached value
   }
 
@@ -50,6 +50,14 @@ const baseRules = {
   'no-console': 'warn',
 };
 
+const typescriptExtends = ['plugin:@typescript-eslint/recommended'];
+const typescriptPlugins = { ...basePlugins, '@typescript-eslint': typescriptEslint };
+const typescriptRules = {
+  ...baseRules,
+  '@typescript-eslint/explicit-function-return-type': 'warn',
+  '@typescript-eslint/explicit-module-boundary-types': 'warn',
+};
+
 const config = [
   { ignores: ['dist'] },
   {
@@ -65,18 +73,24 @@ const config = [
         sourceType: 'module',
         ...(hasTSConfig() ? { project: tsConfigPath } : {}),
       },
-      parser: hasTSConfig() ? tsParser : '@babel/eslint-parser', // Fallback to Babel parser
+      parser: hasTSConfig() ? tsParser : require.resolve('@babel/eslint-parser'), // Fallback to Babel parser
     },
     settings: { react: { version: 'detect' } },
-    plugins: hasTSConfig() ? { ...basePlugins, '@typescript-eslint': typescriptEslint } : basePlugins,
-    extends: hasTSConfig() ? [...baseExtends, 'plugin:@typescript-eslint/recommended'] : baseExtends,
-    rules: hasTSConfig()
-      ? {
-          ...baseRules,
-          '@typescript-eslint/explicit-function-return-type': 'warn',
-          '@typescript-eslint/explicit-module-boundary-types': 'warn',
-        }
-      : baseRules,
+    ...(() => {
+      if (hasTSConfig()) {
+        return {
+          plugins: typescriptPlugins,
+          extends: typescriptExtends,
+          rules: typescriptRules,
+        };
+      } else {
+        return {
+          plugins: basePlugins,
+          extends: baseExtends,
+          rules: baseRules,
+        };
+      }
+    })(),
   },
 ];
 

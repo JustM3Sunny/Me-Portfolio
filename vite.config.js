@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: plugins,
+    plugins,
     build: {
       sourcemap: !isProduction,
       minify: isProduction,
@@ -44,13 +44,13 @@ export default defineConfig(({ mode }) => {
             isProduction ? `js/[name]-[hash].js` : `js/[name].js`,
           assetFileNames: (assetInfo) => {
             if (!assetInfo.name) {
-              return 'assets/[hash][extname]'; // Handle cases where asset name is missing
+              return `assets/unknown-[hash][extname]`; // Handle cases where asset name is missing
             }
 
             const extType = assetInfo.name.split('.').pop();
 
             if (!extType) {
-              return `assets/[hash][extname]'; // Handle cases with no extension
+              return `assets/no-extension-[hash]`; // Handle cases with no extension
             }
 
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
