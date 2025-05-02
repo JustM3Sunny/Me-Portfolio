@@ -37,10 +37,14 @@ module.exports = {
       safelist: [],
       // Consider using a more robust extractor for complex class names
       // This extractor is more robust and handles more cases.
-      defaultExtractor: (content) => {
-        const match = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
-        return match;
-      },
+      extractors: [
+        {
+          extractor: (content) => {
+            return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
+          },
+          extensions: ['js', 'jsx', 'ts', 'tsx', 'html'],
+        },
+      ],
     }
     : false,
   future: {
@@ -49,5 +53,7 @@ module.exports = {
   },
   experimental: {
     optimizeUniversalDefaults: true,
-  }
+  },
+  // Add important to fix issues with other CSS
+  important: true,
 }

@@ -10,10 +10,10 @@ import path from 'node:path';
 
 const tsConfigPath = path.resolve('./tsconfig.json');
 
-let tsProject: boolean | null = null; // Initialize as null, indicating not checked yet
+let tsProject: boolean | undefined; // Initialize as undefined, indicating not checked yet
 
 const hasTSConfig = (): boolean => {
-  if (tsProject !== null) {
+  if (tsProject !== undefined) {
     return tsProject; // Return cached value
   }
 
@@ -76,21 +76,17 @@ const config = [
       parser: hasTSConfig() ? tsParser : require.resolve('@babel/eslint-parser'), // Fallback to Babel parser
     },
     settings: { react: { version: 'detect' } },
-    ...(() => {
-      if (hasTSConfig()) {
-        return {
+    ...(hasTSConfig()
+      ? {
           plugins: typescriptPlugins,
           extends: typescriptExtends,
           rules: typescriptRules,
-        };
-      } else {
-        return {
+        }
+      : {
           plugins: basePlugins,
           extends: baseExtends,
           rules: baseRules,
-        };
-      }
-    })(),
+        }),
   },
 ];
 

@@ -68,5 +68,12 @@ export default defineConfig(({ mode }) => {
     esbuild: {
       drop: isProduction ? ['console', 'debugger'] : [],
     },
+    // Add server configuration for development
+    server: {
+      port: 3000, // Specify a default port
+      hmr: {
+        overlay: true, // Enable HMR overlay
+      },
+    },
   };
 });
