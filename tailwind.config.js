@@ -37,12 +37,9 @@ module.exports = {
       safelist: [],
       // Consider using a more robust extractor for complex class names
       // This extractor is more robust and handles more cases.
-      extractors: [
-        {
-          extractor: (content) => {
-            return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
-          },
-          extensions: ['js', 'jsx', 'ts', 'tsx', 'html'],
+      extract: [
+        (content) => {
+          return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
         },
       ],
     }

@@ -75,5 +75,7 @@ export default defineConfig(({ mode }) => {
         overlay: true, // Enable HMR overlay
       },
     },
+    // Add a cache directory for faster builds
+    cacheDir: '.vite',
   };
 });
