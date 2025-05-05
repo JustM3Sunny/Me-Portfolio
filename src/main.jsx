@@ -9,8 +9,8 @@ function RootComponent() {
   const [isRootReady, setIsRootReady] = useState(false);
 
   useEffect(() => {
-    const element = document.getElementById('root');
-    if (!element) {
+    // Check for root element existence only once on mount.
+    if (!document.getElementById('root')) {
       setError(new Error('Failed to find the root element: #root'));
     } else {
       setIsRootReady(true);
@@ -44,22 +44,31 @@ function RootComponent() {
   );
 }
 
-const rootElement = document.getElementById('root');
+const renderApp = () => {
+  const rootElement = document.getElementById('root');
 
-if (!rootElement) {
-  console.error('Failed to find the root element: #root');
-  // Render an error message directly to the document body if the root element is missing.
-  const errorDiv = document.createElement('div');
-  errorDiv.style.textAlign = 'center';
-  errorDiv.style.padding = '20px';
-  errorDiv.style.backgroundColor = '#f8d7da';
-  errorDiv.style.color = '#721c24';
-  errorDiv.innerHTML = `
-    <h1>Application Error</h1>
-    <p>Root element not found. Please ensure a div with id "root" exists in your HTML.</p>
-  `;
-  document.body.appendChild(errorDiv);
+  if (!rootElement) {
+    console.error('Failed to find the root element: #root');
+    // Render an error message directly to the document body if the root element is missing.
+    const errorDiv = document.createElement('div');
+    errorDiv.style.textAlign = 'center';
+    errorDiv.style.padding = '20px';
+    errorDiv.style.backgroundColor = '#f8d7da';
+    errorDiv.style.color = '#721c24';
+    errorDiv.innerHTML = `
+      <h1>Application Error</h1>
+      <p>Root element not found. Please ensure a div with id "root" exists in your HTML.</p>
+    `;
+    document.body.appendChild(errorDiv);
+  } else {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<RootComponent />);
+  }
+};
+
+// Call renderApp after the DOM is fully loaded.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
 } else {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(<RootComponent />);
+  renderApp();
 }

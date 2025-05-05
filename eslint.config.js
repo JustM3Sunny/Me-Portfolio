@@ -10,10 +10,10 @@ import path from 'node:path';
 
 const tsConfigPath = path.resolve('./tsconfig.json');
 
-let tsProject: boolean | null = null; // Initialize as null, indicating not checked yet
+let tsProject: boolean | undefined = undefined; // Initialize as undefined
 
 const hasTSConfig = (): boolean => {
-  if (tsProject !== null) {
+  if (tsProject !== undefined) {
     return tsProject; // Return cached value
   }
 
@@ -77,19 +77,12 @@ const config = [
     },
     settings: { react: { version: 'detect' } },
     ...(() => {
-      if (hasTSConfig()) {
-        return {
-          plugins: typescriptPlugins,
-          extends: typescriptExtends,
-          rules: typescriptRules,
-        };
-      } else {
-        return {
-          plugins: basePlugins,
-          extends: baseExtends,
-          rules: baseRules,
-        };
-      }
+      const useTypescript = hasTSConfig();
+      return {
+        plugins: useTypescript ? typescriptPlugins : basePlugins,
+        extends: useTypescript ? typescriptExtends : baseExtends,
+        rules: useTypescript ? typescriptRules : baseRules,
+      };
     })(),
   },
 ];

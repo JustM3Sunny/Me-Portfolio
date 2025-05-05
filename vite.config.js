@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => {
           entryFileNames: (chunkInfo) =>
             isProduction ? `js/[name]-[hash].js` : `js/[name].js`,
           assetFileNames: (assetInfo) => {
-            if (!assetInfo.name) {
+            if (!assetInfo?.name) { // Use optional chaining for safety
               return `assets/unknown-[hash][extname]`; // Handle cases where asset name is missing
             }
 
@@ -77,5 +77,9 @@ export default defineConfig(({ mode }) => {
     },
     // Add a cache directory for faster builds
     cacheDir: '.vite',
+    // Add environment variables to the client
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(mode),
+    },
   };
 });

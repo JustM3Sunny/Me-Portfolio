@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const production = process.env.NODE_ENV === 'production';
+
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -27,7 +29,7 @@ module.exports = {
   plugins: [],
   // prefix: 'tw-', // Uncomment if prefixing is needed
   // important: true, // Uncomment if increased specificity is needed
-  purge: process.env.NODE_ENV === 'production'
+  purge: production
     ? {
       enabled: true,
       content: [
@@ -37,11 +39,11 @@ module.exports = {
       safelist: [],
       // Consider using a more robust extractor for complex class names
       // This extractor is more robust and handles more cases.
-      extract: [
-        (content) => {
+      extract: {
+        DEFAULT: (content) => {
           return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
         },
-      ],
+      },
     }
     : false,
   future: {
@@ -53,4 +55,7 @@ module.exports = {
   },
   // Add important to fix issues with other CSS
   important: true,
+  // optimization: production ? {
+  //   minimize: true,
+  // } : undefined,
 }
