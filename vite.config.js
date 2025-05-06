@@ -43,14 +43,14 @@ export default defineConfig(({ mode }) => {
           entryFileNames: (chunkInfo) =>
             isProduction ? `js/[name]-[hash].js` : `js/[name].js`,
           assetFileNames: (assetInfo) => {
-            if (!assetInfo?.name) { // Use optional chaining for safety
-              return `assets/unknown-[hash][extname]`; // Handle cases where asset name is missing
+            if (!assetInfo?.name) {
+              return `assets/unknown-[hash][extname]`;
             }
 
             const extType = assetInfo.name.split('.').pop();
 
             if (!extType) {
-              return `assets/no-extension-[hash]`; // Handle cases with no extension
+              return `assets/no-extension-[hash]`;
             }
 
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
@@ -68,18 +68,49 @@ export default defineConfig(({ mode }) => {
     esbuild: {
       drop: isProduction ? ['console', 'debugger'] : [],
     },
-    // Add server configuration for development
     server: {
-      port: 3000, // Specify a default port
+      port: 3000,
       hmr: {
-        overlay: true, // Enable HMR overlay
+        overlay: true,
       },
     },
-    // Add a cache directory for faster builds
     cacheDir: '.vite',
-    // Add environment variables to the client
     define: {
       'process.env.NODE_ENV': JSON.stringify(mode),
+      // Add a feature flag example
+      'process.env.FEATURE_FLAG_EXAMPLE': JSON.stringify(process.env.FEATURE_FLAG_EXAMPLE || 'false'),
     },
+    // Add linting and formatting on save during development
+    ...(mode === 'development'
+      ? {
+          plugins: [
+            {
+              name: 'eslint',
+              enforce: 'pre',
+              async transform(code, id) {
+                if (/\.(js|jsx|ts|tsx)$/.test(id)) {
+                  try {
+                    const { ESLint } = await import('eslint');
+                    const eslint = new ESLint();
+                    const results = await eslint.lintText(code, { filePath: id });
+                    if (results && results.length > 0) {
+                      results.forEach((result) => {
+                        if (result.messages && result.messages.length > 0) {
+                          result.messages.forEach((message) => {
+                            console.warn(`eslint: ${message.message} (${message.ruleId}) in ${id}:${message.line}:${message.column}`);
+                          });
+                        }
+                      });
+                    }
+                  } catch (error) {
+                    console.error('ESLint error:', error);
+                  }
+                }
+                return code;
+              },
+            },
+          ],
+        }
+      : {}),
   };
 });

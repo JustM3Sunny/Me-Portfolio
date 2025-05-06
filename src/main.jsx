@@ -9,16 +9,20 @@ function RootComponent() {
   const [isRootReady, setIsRootReady] = useState(false);
 
   useEffect(() => {
-    // Check for root element existence only once on mount.
-    if (!document.getElementById('root')) {
-      setError(new Error('Failed to find the root element: #root'));
-    } else {
-      setIsRootReady(true);
+    const rootElement = document.getElementById('root');
+
+    if (!rootElement) {
+      const errorMessage = 'Failed to find the root element: #root';
+      console.error(errorMessage);
+      setError(new Error(errorMessage));
+      return; // Exit the useEffect if root is not found
     }
+
+    setIsRootReady(true);
+
   }, []);
 
   if (error) {
-    console.error(error);
     return (
       <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f8d7da', color: '#721c24' }}>
         <h1>Application Error</h1>
@@ -60,10 +64,11 @@ const renderApp = () => {
       <p>Root element not found. Please ensure a div with id "root" exists in your HTML.</p>
     `;
     document.body.appendChild(errorDiv);
-  } else {
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(<RootComponent />);
+    return; // Prevent React from trying to render if root is missing
   }
+
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<RootComponent />);
 };
 
 // Call renderApp after the DOM is fully loaded.

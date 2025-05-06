@@ -39,11 +39,11 @@ module.exports = {
       safelist: [],
       // Consider using a more robust extractor for complex class names
       // This extractor is more robust and handles more cases.
-      extract: {
-        DEFAULT: (content) => {
-          return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
-        },
-      },
+      // extract: {  // Removed custom extractor as it's generally not needed and can be problematic
+      //   DEFAULT: (content) => {
+      //     return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
+      //   },
+      // },
     }
     : false,
   future: {
@@ -58,4 +58,5 @@ module.exports = {
   // optimization: production ? {
   //   minimize: true,
   // } : undefined,
+  // Removed optimization.minimize as it's deprecated and handled by other tools
 }

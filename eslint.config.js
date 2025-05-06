@@ -10,10 +10,10 @@ import path from 'node:path';
 
 const tsConfigPath = path.resolve('./tsconfig.json');
 
-let tsProject: boolean | undefined = undefined; // Initialize as undefined
+let tsProject: boolean | null = null; // Initialize as null, indicating not yet checked
 
 const hasTSConfig = (): boolean => {
-  if (tsProject !== undefined) {
+  if (tsProject !== null) {
     return tsProject; // Return cached value
   }
 
@@ -50,12 +50,14 @@ const baseRules = {
   'no-console': 'warn',
 };
 
-const typescriptExtends = ['plugin:@typescript-eslint/recommended'];
+const typescriptExtends = ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/recommended-type-checked'];
 const typescriptPlugins = { ...basePlugins, '@typescript-eslint': typescriptEslint };
 const typescriptRules = {
   ...baseRules,
   '@typescript-eslint/explicit-function-return-type': 'warn',
   '@typescript-eslint/explicit-module-boundary-types': 'warn',
+  '@typescript-eslint/no-explicit-any': 'warn', // Consider adding this rule
+  '@typescript-eslint/no-unused-vars': 'warn', // Override base rule for TS
 };
 
 const config = [
@@ -78,10 +80,14 @@ const config = [
     settings: { react: { version: 'detect' } },
     ...(() => {
       const useTypescript = hasTSConfig();
+      const plugins = useTypescript ? typescriptPlugins : basePlugins;
+      const extendsList = useTypescript ? typescriptExtends : baseExtends;
+      const rules = useTypescript ? typescriptRules : baseRules;
+
       return {
-        plugins: useTypescript ? typescriptPlugins : basePlugins,
-        extends: useTypescript ? typescriptExtends : baseExtends,
-        rules: useTypescript ? typescriptRules : baseRules,
+        plugins,
+        extends: extendsList,
+        rules,
       };
     })(),
   },
